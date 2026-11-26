@@ -1,0 +1,154 @@
+{
+ "actualizado": "2026-11-26T23:58:40Z",
+ "pendientes_telegram": {
+  "piezas": 20,
+  "lotes": 3,
+  "productos": 5,
+  "otros": 0
+ },
+ "trabajando": 1,
+ "agentes": [
+  {
+   "id": "research",
+   "nombre": "Research",
+   "rol": "Busca noticias, chistes y tendencias de la semana",
+   "motor": "Claude",
+   "estado": "ok",
+   "ultima": {
+    "cuando": "2026-11-22T00:23:03Z",
+    "resultado": "success",
+    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/44966203276"
+   },
+   "proxima": "2026-11-27T03:00:00Z",
+   "notas": []
+  },
+  {
+   "id": "copy",
+   "nombre": "Copy",
+   "rol": "Escribe los textos de los posteos",
+   "motor": "Claude",
+   "estado": "ok",
+   "ultima": {
+    "cuando": "2026-11-22T00:23:46Z",
+    "resultado": "success",
+    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/44966203276"
+   },
+   "proxima": "2026-11-27T03:00:00Z",
+   "notas": []
+  },
+  {
+   "id": "formatos",
+   "nombre": "Formatos",
+   "rol": "Arma fotos, carruseles y videos",
+   "motor": "Claude",
+   "estado": "esperando-ok",
+   "ultima": {
+    "cuando": "2026-11-22T00:25:23Z",
+    "resultado": "success",
+    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/44966203276"
+   },
+   "proxima": "2026-11-27T03:00:00Z",
+   "notas": [
+    "20 foto(s)/video(s) esperando tu OK en Telegram"
+   ]
+  },
+  {
+   "id": "editor",
+   "nombre": "Editor",
+   "rol": "Filtra calidad y te pide el OK del lote",
+   "motor": "Claude",
+   "estado": "esperando-ok",
+   "ultima": {
+    "cuando": "2026-11-22T00:26:40Z",
+    "resultado": "success",
+    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/44966203276"
+   },
+   "proxima": "2026-11-27T03:00:00Z",
+   "notas": [
+    "3 lote(s) esperando tu OK en Telegram"
+   ]
+  },
+  {
+   "id": "atencion",
+   "nombre": "Atención",
+   "rol": "Revisa pedidos y deja respuestas para clientes",
+   "motor": "Claude Haiku",
+   "estado": "ok",
+   "ultima": {
+    "cuando": "2026-11-22T12:37:32Z",
+    "resultado": "success",
+    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/45023194222"
+   },
+   "proxima": "2026-11-29T12:00:00Z",
+   "notas": []
+  },
+  {
+   "id": "pauta",
+   "nombre": "Pauta",
+   "rol": "Propone la pauta paga dentro del tope",
+   "motor": "Claude Haiku",
+   "estado": "ok",
+   "ultima": {
+    "cuando": "2026-11-22T12:37:49Z",
+    "resultado": "success",
+    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/45023194222"
+   },
+   "proxima": "2026-11-29T12:00:00Z",
+   "notas": []
+  },
+  {
+   "id": "orquestador",
+   "nombre": "Orquestador",
+   "rol": "Mide, decide y reparte tareas",
+   "motor": "Claude",
+   "estado": "esperando-ok",
+   "ultima": {
+    "cuando": "2026-11-22T12:38:21Z",
+    "resultado": "success",
+    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/45023194222"
+   },
+   "proxima": "2026-11-29T12:00:00Z",
+   "notas": [
+    "5 idea(s) de producto esperando tu OK"
+   ]
+  },
+  {
+   "id": "gemini",
+   "nombre": "Gemini",
+   "rol": "Escribe el tuit diario de noticia o chiste",
+   "motor": "Gemini API",
+   "estado": "sin-datos",
+   "ultima": null,
+   "proxima": "2026-11-27T12:00:00Z",
+   "notas": [
+    "Todavía no escribió ningún tuit: arranca en la próxima corrida diaria"
+   ]
+  },
+  {
+   "id": "antigravity",
+   "nombre": "Antigravity",
+   "rol": "Programa tareas del repo en la PC de Facu",
+   "motor": "Antigravity",
+   "estado": "sin-datos",
+   "ultima": null,
+   "proxima": null,
+   "notas": [
+    "0001: generar fotos base de mockups con la API de Gemini (pendiente)",
+    "Corre en la PC de Facu: acá se ve solo cuando abre un PR"
+   ]
+  },
+  {
+   "id": "publicador",
+   "nombre": "Publicador",
+   "rol": "Procesa tus OK de Telegram, publica y avisa ventas",
+   "motor": "script",
+   "estado": "corriendo",
+   "ultima": null,
+   "proxima": "2026-11-27T00:05:00Z",
+   "notas": [
+    "0 posteo(s) aprobados para las próximas 24 h",
+    "0 publicado(s) hoy"
+   ]
+  }
+ ]
+}
