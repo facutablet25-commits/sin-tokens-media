@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Oficina Sin Tokens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1022; --panel:#161a36; --panel2:#1e2347; --line:#2e3570; --text:#e8ecff; --muted:#9aa3d6;
+  --verde:#3ddc84; --amarillo:#ffd23f; --rojo:#ff5a6a; --azul:#5ab4ff; --gris:#7b82b0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text)}
+body{font-family:"VT323",ui-monospace,monospace;font-size:20px;line-height:1.15}
+.pix{font-family:"Press Start 2P",monospace;letter-spacing:.5px}
+main{max-width:1180px;margin:0 auto;padding:12px 16px 40px}
+header{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between;margin-bottom:10px}
+h1{font-size:16px;margin:0;color:#fff}
+h1 span{color:var(--verde)}
+.hud{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--panel);border:2px solid var(--line);padding:4px 10px;white-space:nowrap}
+.chip b{color:var(--amarillo);font-weight:normal}
+.escena{width:100%;border:3px solid var(--line);background:#0a0d1c;overflow-x:auto}
+.lienzo{position:relative;min-width:720px}
+canvas{display:block;width:100%;height:auto;image-rendering:pixelated;image-rendering:crisp-edges}
+.capa{position:absolute;inset:0;pointer-events:none}
+.burbuja{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;cursor:pointer;
+  background:#fff;color:#111;border:2px solid #111;padding:2px 6px;font-size:clamp(13px,1.45vw,17px);
+  white-space:nowrap;box-shadow:2px 2px 0 #000a}
+.burbuja:after{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-5px;border:5px solid transparent;border-top-color:#111;border-bottom:0}
+.burbuja.corriendo{background:#d9ffe9}
+.burbuja.esperando-ok{background:#fff4c2}
+.burbuja.fallo{background:#ffd6da}
+.burbuja.sin-datos,.burbuja.ok{background:#eef0ff}
+.tag{position:absolute;transform:translate(-50%,0);font-family:"Press Start 2P",monospace;font-size:clamp(7px,.75vw,9px);
+  background:#000c;color:#cfe;border:1px solid #3ddc8466;padding:2px 4px;white-space:nowrap}
+.aviso{margin:10px 0;padding:8px 12px;border:2px solid var(--amarillo);background:#2a250f;color:#ffe9a0;display:none}
+.aviso.on{display:block}
+.grilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:16px}
+.card{background:var(--panel);border:2px solid var(--line);padding:10px 12px;scroll-margin-top:12px}
+.card.marcada{border-color:var(--amarillo)}
+.card h2{font-size:11px;margin:0 0 6px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.estado{font-size:9px;padding:3px 6px;border:2px solid currentColor}
+.estado.corriendo{color:var(--verde)} .estado.esperando-ok{color:var(--amarillo)}
+.estado.fallo{color:var(--rojo)} .estado.ok{color:var(--azul)} .estado.sin-datos{color:var(--gris)}
+.rol{color:var(--muted);margin-bottom:6px}
+.fila{display:flex;gap:6px}
+.fila .k{color:var(--muted);min-width:64px}
+.card ul{margin:6px 0 0;padding-left:18px;color:#ffe9a0}
+a{color:var(--azul)}
+footer{margin-top:18px;color:var(--muted);font-size:17px}
+@media (max-width:640px){ h1{font-size:12px} body{font-size:18px} }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1 class="pix">OFICINA <span>SIN TOKENS</span></h1>
+    <div class="hud">
+      <div class="chip">Hora ARG <b id="reloj">--:--</b></div>
+      <div class="chip">Trabajando ahora <b id="trabajando">-</b></div>
+      <div class="chip">Esperan tu OK en Telegram <b id="pendientes">-</b></div>
+      <div class="chip">Actualizado <b id="actualizado">-</b></div>
+    </div>
+  </header>
+  <div class="aviso" id="aviso"></div>
+  <div class="escena" id="escena">
+    <div class="lienzo"><canvas id="lienzo" width="600" height="430"></canvas>
+    <div class="capa" id="capa"></div></div>
+  </div>
+  <section class="grilla" id="grilla"></section>
+  <footer>Todo sale de las corridas reales de GitHub Actions y de los archivos del repo. Si un dato no está, se dice. Se actualiza solo cada hora y cuando arranca o termina un agente.</footer>
+</main>
+<script>
+"use strict";
+const RAW = "https://raw.githubusercontent.com/facutablet25-commits/sin-tokens-media/main/oficina/estado.json";
+const W = 12, D = 10, HW = 24, HH = 12, OX = 276, OY = 140, MURO = 104;
+const cv = document.getElementById("lienzo"), ctx = cv.getContext("2d");
+ctx.imageSmoothingEnabled = false;
+
+// Puestos: posición del escritorio en la grilla, color del robot y objeto de su puesto.
+const PUESTOS = {
+  research:    {x:1.2, y:1.6, color:"#5ab4ff", extra:"radar"},
+  copy:        {x:1.2, y:4.6, color:"#ff8ad8", extra:"papeles"},
+  formatos:    {x:1.2, y:7.6, color:"#b18cff", extra:"camara"},
+  editor:      {x:4.6, y:1.4, color:"#ffd23f", extra:"lupa"},
+  orquestador: {x:4.8, y:4.9, color:"#3ddc84", extra:"grande"},
+  pauta:       {x:8.6, y:1.4, color:"#ff9f43", extra:"grafico"},
+  atencion:    {x:9.6, y:4.6, color:"#ff5a6a", extra:"chat"},
+  publicador:  {x:9.6, y:8.0, color:"#4dd6c9", extra:"buzon"},
+  gemini:      {x:3.4, y:8.6, color:"#7aa2ff", extra:"estrella"},
+  antigravity: {x:6.4, y:8.4, color:"#c0c6ff", extra:"pc"},
+};
+let datos = null, error = null;
+
+function p(x, y, z = 0) { return [Math.round(OX + (x - y) * HW), Math.round(OY + (x + y) * HH - z)]; }
+function poly(pts, fill, stroke) {
+  ctx.beginPath(); ctx.moveTo(...pts[0]); for (const q of pts.slice(1)) ctx.lineTo(...q); ctx.closePath();
+  ctx.fillStyle = fill; ctx.fill(); if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
+}
+function caja(x, y, w, d, h, z, top, izq, der) {
+  poly([p(x, y + d, z + h), p(x + w, y + d, z + h), p(x + w, y + d, z), p(x, y + d, z)], izq);
+  poly([p(x + w, y, z + h), p(x + w, y + d, z + h), p(x + w, y + d, z), p(x + w, y, z)], der);
+  poly([p(x, y, z + h), p(x + w, y, z + h), p(x + w, y + d, z + h), p(x, y + d, z + h)], top);
+}
+function px(x, y, w, h, c) { ctx.fillStyle = c; ctx.fillRect(Math.round(x), Math.round(y), w, h); }
+
+function piso() {
+  for (let i = 0; i < W; i++) for (let j = 0; j < D; j++) {
+    let c = (i + j) % 2 ? "#232a55" : "#262e5c";
+    if (i < 3 && j > 0) c = (i + j) % 2 ? "#2b2557" : "#2f285e";           // zona contenido
+    if (i >= 8 && j < 9) c = (i + j) % 2 ? "#1f3550" : "#223a57";           // zona domingo
+    poly([p(i, j), p(i + 1, j), p(i + 1, j + 1), p(i, j + 1)], c);
+  }
+  // cables de colores por el piso
+  ctx.lineWidth = 2;
+  [["#3ddc84", 0.5], ["#ff8ad8", 0.65], ["#5ab4ff", 0.8]].forEach(([c, k], n) => {
+    ctx.strokeStyle = c + "99"; ctx.beginPath();
+    const a = p(2.6, 3 + n * 2.4), b = p(5.2 + n * 0.3, 5.6), d2 = p(9.4, 5.2 + n);
+    ctx.moveTo(...a); ctx.lineTo(b[0], a[1] + 10); ctx.lineTo(...b); ctx.lineTo(d2[0], b[1]); ctx.lineTo(...d2); ctx.stroke();
+  });
+}
+function paredes(t) {
+  // pared izquierda (x = 0) y derecha (y = 0)
+  poly([p(0, 0), p(0, D), p(0, D, MURO), p(0, 0, MURO)], "#343c78");
+  poly([p(0, 0), p(W, 0), p(W, 0, MURO), p(0, 0, MURO)], "#3c4588");
+  poly([p(0, 0, MURO), p(0, D, MURO), p(-0.25, D, MURO), p(-0.25, 0, MURO)], "#4a54a0");
+  poly([p(0, 0, MURO), p(W, 0, MURO), p(W, -0.25, MURO), p(0, -0.25, MURO)], "#5560b0");
+  // zócalo
+  poly([p(0, 0), p(0, D), p(0, D, 6), p(0, 0, 6)], "#262c5c");
+  poly([p(0, 0), p(W, 0), p(W, 0, 6), p(0, 0, 6)], "#2c3366");
+  // cartel SIN TOKENS en la pared derecha
+  cuadroPared(3.4, 7.2, 84, 66, "#0d1022", "#3ddc84");
+  const c = p(5.3, 0, 76); ctx.fillStyle = "#e8ecff"; ctx.font = "8px 'Press Start 2P'"; ctx.textAlign = "center";
+  ctx.save(); ctx.translate(c[0], c[1]); ctx.transform(1, 0.5, 0, 1, 0, 0); ctx.fillText("SIN TOKENS", 0, 0);
+  ctx.fillStyle = "#3ddc84"; ctx.fillRect(-36, 4, 72, 5); ctx.restore();
+
+  // pizarra de pauta con gráfico
+  cuadroPared(7.4, 7.4, 0, 0);
+  // pósters de redes en la pared izquierda
+  const redes = [["#e1306c", "IG"], ["#111", "TT"], ["#000", "X"], ["#2aa3e0", "TG"]];
+  redes.forEach(([col, txt], i) => {
+    const y0 = 1.0 + i * 1.6, z0 = 44;
+    poly([p(0, y0, z0 + 36), p(0, y0 + 1.1, z0 + 36), p(0, y0 + 1.1, z0), p(0, y0, z0)], "#e8ecff");
+    poly([p(0, y0 + 0.12, z0 + 32), p(0, y0 + 0.98, z0 + 32), p(0, y0 + 0.98, z0 + 6), p(0, y0 + 0.12, z0 + 6)], col);
+    const m = p(0, y0 + 0.55, z0 + 15); ctx.fillStyle = "#fff"; ctx.font = "7px 'Press Start 2P'";
+    ctx.save(); ctx.translate(m[0], m[1]); ctx.transform(1, -0.5, 0, 1, 0, 0); ctx.textAlign = "center"; ctx.fillText(txt, 0, 0); ctx.restore();
+  });
+  // reloj de pared
+  const r = p(0, 8.6, 78); px(r[0] - 9, r[1] - 9, 18, 18, "#e8ecff"); px(r[0] - 7, r[1] - 7, 14, 14, "#0d1022");
+  const ang = (t / 1000) % 60 / 60 * Math.PI * 2; ctx.strokeStyle = "#ffd23f"; ctx.beginPath(); ctx.moveTo(...r);
+  ctx.lineTo(r[0] + Math.sin(ang) * 6, r[1] - Math.cos(ang) * 6); ctx.stroke();
+}
+function cuadroPared(x0, x1, z0, z1, fill, borde) {
+  if (!fill) { // pizarra
+    poly([p(x0, 0, 92), p(x1 + 4.2, 0, 92), p(x1 + 4.2, 0, 38), p(x0, 0, 38)], "#f4f6ff", "#9aa3d6");
+    const cols = ["#ff5a6a", "#ffd23f", "#3ddc84", "#5ab4ff"];
+    cols.forEach((c, i) => { const b = p(x0 + 0.5 + i * 0.6, 0, 46); px(b[0], b[1] - 8 - i * 7, 8, 8 + i * 7, c); });
+    ctx.strokeStyle = "#ff5a6a"; ctx.beginPath(); ctx.moveTo(...p(x0 + 2.8, 0, 50)); ctx.lineTo(...p(x0 + 3.2, 0, 66));
+    ctx.lineTo(...p(x0 + 3.6, 0, 60)); ctx.lineTo(...p(x0 + 4.0, 0, 82)); ctx.stroke();
+    return;
+  }
+  poly([p(x0, 0, z0 + 22), p(x1, 0, z0 + 22), p(x1, 0, z1 - 4), p(x0, 0, z1 - 4)], borde);
+  poly([p(x0 + 0.1, 0, z0 + 18), p(x1 - 0.1, 0, z0 + 18), p(x1 - 0.1, 0, z1), p(x0 + 0.1, 0, z1)], fill);
+}
+function planta(x, y) {
+  caja(x, y, 0.5, 0.5, 10, 0, "#a0653a", "#7a4a28", "#8c5530");
+  const c = p(x + 0.25, y + 0.25, 12);
+  [[0, -18, 7], [-7, -10, 6], [7, -10, 6], [-4, -24, 5], [4, -22, 5]].forEach(([dx, dy, s]) => px(c[0] + dx - s / 2, c[1] + dy, s, s + 4, "#2fa865"));
+  px(c[0] - 1, c[1] - 14, 2, 14, "#1d7a46");
+}
+function servidor(x, y, t) {
+  caja(x, y, 0.7, 0.7, 58, 0, "#3a4170", "#1a1f3d", "#252b52");
+  for (let k = 0; k < 6; k++) {
+    const a = p(x + 0.7, y + 0.2, 10 + k * 8);
+    px(a[0] + 2, a[1], 2, 2, (Math.floor(t / 300) + k) % 3 ? "#3ddc84" : "#0f3");
+    px(a[0] + 6, a[1] + 3, 2, 2, (Math.floor(t / 450) + k) % 4 ? "#5ab4ff" : "#123");
+  }
+}
+function cafetera(x, y, t) {
+  caja(x, y, 0.8, 0.8, 22, 0, "#5560b0", "#2c3366", "#3c4588");
+  caja(x + 0.15, y + 0.15, 0.5, 0.5, 18, 22, "#c0392b", "#7d241b", "#9e2e22");
+  const c = p(x + 0.4, y + 0.4, 44);
+  if (Math.floor(t / 700) % 2) { px(c[0] - 2, c[1] - 6, 2, 3, "#fff8"); px(c[0] + 1, c[1] - 10, 2, 3, "#fff6"); }
+}
+function sillon(x, y) {
+  caja(x, y, 1.8, 0.8, 10, 0, "#a0522d", "#6e3820", "#874527");
+  caja(x, y, 1.8, 0.25, 22, 0, "#b5653a", "#6e3820", "#874527");
+}
+
+function robot(cx, cy, color, estado, t, sentado = true) {
+  const bob = estado === "corriendo" ? Math.round(Math.sin(t / 160) * 1.5) : 0;
+  const y = cy + bob;
+  const oscuro = "#1b1f3a";
+  // cuerpo
+  px(cx - 7, y - 14, 14, 12, color); px(cx - 7, y - 14, 14, 2, "#ffffff55");
+  px(cx - 3, y - 10, 6, 4, oscuro);
+  // brazos (tecleando si corre)
+  const tecla = estado === "corriendo" && Math.floor(t / 120) % 2 ? 1 : 0;
+  px(cx - 10, y - 12 + tecla, 3, 8, color); px(cx + 7, y - 12 + (1 - tecla), 3, 8, color);
+  // cabeza
+  px(cx - 8, y - 29, 16, 14, "#dfe4ff"); px(cx - 6, y - 27, 12, 9, oscuro);
+  let ojo = color;
+  if (estado === "fallo") ojo = "#ff5a6a";
+  const dormido = estado === "ok" || estado === "sin-datos";
+  if (dormido) { px(cx - 5, y - 23, 4, 1, ojo); px(cx + 1, y - 23, 4, 1, ojo); }
+  else {
+    const parpadeo = Math.floor(t / 2200) % 7 === 0 && (t % 2200) < 140;
+    px(cx - 4, y - 25, 3, parpadeo ? 1 : 3, ojo); px(cx + 1, y - 25, 3, parpadeo ? 1 : 3, ojo);
+  }
+  // antena
+  px(cx - 1, y - 33, 2, 4, "#dfe4ff");
+  const luz = estado === "corriendo" ? (Math.floor(t / 250) % 2 ? "#3ddc84" : "#0f6") :
+              estado === "esperando-ok" ? (Math.floor(t / 400) % 2 ? "#ffd23f" : "#a80") :
+              estado === "fallo" ? "#ff5a6a" : "#7b82b0";
+  px(cx - 2, y - 36, 4, 3, luz);
+  if (!sentado) { px(cx - 6, y - 2, 4, 6, oscuro); px(cx + 2, y - 2, 4, 6, oscuro); }
+  // zZz
+  if (dormido) {
+    ctx.fillStyle = "#c0c6ff"; ctx.font = "7px 'Press Start 2P'"; ctx.textAlign = "left";
+    const f = (t / 900) % 3;
+    ctx.globalAlpha = 0.85; ctx.fillText("z", cx + 9, y - 30 - f * 2); if (f > 1) ctx.fillText("Z", cx + 14, y - 38 - f); ctx.globalAlpha = 1;
+  }
+}
+function silla(x, y) {
+  caja(x, y, 0.55, 0.55, 8, 0, "#1b1f3a", "#11142a", "#161a33");
+  caja(x, y, 0.55, 0.12, 24, 0, "#22274a", "#11142a", "#161a33");
+}
+function pantalla(x, y, estado, t, ancho = 0.7) {
+  // monitor apoyado en el escritorio, mirando hacia adelante
+  const base = p(x, y, 16);
+  const w = Math.round(ancho * 30), h = 16;
+  px(base[0] - w / 2 - 2, base[1] - h - 8, w + 4, h + 4, "#11142a");
+  let col = "#2e3570";
+  if (estado === "corriendo") col = Math.floor(t / 200) % 2 ? "#1f7a4d" : "#25915b";
+  if (estado === "esperando-ok") col = "#6b5a10";
+  if (estado === "fallo") col = Math.floor(t / 500) % 2 ? "#7a1f2a" : "#4a1219";
+  px(base[0] - w / 2, base[1] - h - 6, w, h, col);
+  if (estado === "corriendo") for (let k = 0; k < 4; k++) px(base[0] - w / 2 + 2, base[1] - h - 4 + k * 3, ((t / 60 + k * 9) % (w - 4)), 1, "#aaffcc");
+  if (estado === "esperando-ok") { ctx.fillStyle = "#ffd23f"; ctx.font = "8px 'Press Start 2P'"; ctx.textAlign = "center"; ctx.fillText("OK?", base[0], base[1] - 9); }
+  if (estado === "fallo") { ctx.fillStyle = "#ffb3bb"; ctx.font = "8px 'Press Start 2P'"; ctx.textAlign = "center"; ctx.fillText("ERR", base[0], base[1] - 9); }
+  px(base[0] - 2, base[1] - 2, 4, 3, "#11142a");
+}
+function extra(tipo, x, y, t, color) {
+  const c = p(x, y, 16);
+  if (tipo === "radar") { ctx.strokeStyle = "#5ab4ff"; ctx.beginPath(); ctx.arc(c[0], c[1] - 6, 6, 0, 7); ctx.stroke();
+    const a = t / 400; ctx.beginPath(); ctx.moveTo(c[0], c[1] - 6); ctx.lineTo(c[0] + Math.cos(a) * 6, c[1] - 6 + Math.sin(a) * 6); ctx.stroke(); }
+  if (tipo === "papeles") { px(c[0] - 5, c[1] - 6, 10, 6, "#f4f6ff"); px(c[0] - 3, c[1] - 9, 10, 6, "#e8ecff"); }
+  if (tipo === "camara") { px(c[0] - 6, c[1] - 8, 12, 8, "#11142a"); px(c[0] - 2, c[1] - 6, 4, 4, "#b18cff"); }
+  if (tipo === "lupa") { ctx.strokeStyle = "#ffd23f"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(c[0], c[1] - 7, 4, 0, 7); ctx.stroke(); ctx.lineWidth = 1; px(c[0] + 3, c[1] - 4, 2, 4, "#ffd23f"); }
+  if (tipo === "grafico") { [4, 7, 10].forEach((h, i) => px(c[0] - 6 + i * 4, c[1] - h, 3, h, "#ff9f43")); }
+  if (tipo === "chat") { px(c[0] - 7, c[1] - 12, 12, 8, "#f4f6ff"); px(c[0] - 4, c[1] - 4, 3, 2, "#f4f6ff"); px(c[0] - 4, c[1] - 9, 6, 1, "#ff5a6a"); }
+  if (tipo === "buzon") { px(c[0] - 6, c[1] - 10, 12, 10, "#2aa3e0"); px(c[0] - 3, c[1] - 7, 7, 1, "#fff"); px(c[0] - 3, c[1] - 5, 5, 1, "#fff"); }
+  if (tipo === "estrella") { const s = Math.floor(t / 300) % 2 ? "#7aa2ff" : "#c6d6ff"; px(c[0] - 1, c[1] - 12, 2, 10, s); px(c[0] - 5, c[1] - 8, 10, 2, s); }
+  if (tipo === "pc") { px(c[0] - 6, c[1] - 8, 12, 8, "#c0c6ff"); px(c[0] - 4, c[1] - 6, 8, 4, "#11142a"); }
+}
+function puesto(id, ag, t) {
+  const s = PUESTOS[id]; const estado = ag ? ag.estado : "sin-datos";
+  const grande = s.extra === "grande";
+  const w = grande ? 2.0 : 1.4, d = 0.8;
+  // silla y robot detrás del escritorio
+  silla(s.x + w / 2 - 0.27, s.y - 0.75);
+  const r = p(s.x + w / 2, s.y - 0.25, 10);
+  robot(r[0], r[1], s.color, estado, t + s.x * 300);
+  // escritorio
+  caja(s.x, s.y, w, d, 16, 0, grande ? "#7a5c3e" : "#c9cff5", grande ? "#4e3a27" : "#8d94c4", grande ? "#634a32" : "#a7aedb");
+  pantalla(s.x + w * 0.38, s.y + 0.35, estado, t, grande ? 1.1 : 0.75);
+  extra(s.extra, s.x + w * 0.85, s.y + 0.55, t, s.color);
+  if (grande) { const c = p(s.x + 1.5, s.y + 0.6, 16); px(c[0] - 6, c[1] - 4, 12, 4, "#f4f6ff"); }
+}
+
+function dibujar(t) {
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  ctx.fillStyle = "#0a0d1c"; ctx.fillRect(0, 0, cv.width, cv.height);
+  piso(); paredes(t);
+  // objetos ordenados por profundidad (x + y)
+  const objs = [
+    [0.3, 0.3, () => servidor(0.15, 0.15, t)], [0.3, 1.1, () => servidor(0.15, 0.95, t)],
+    [11.2, 0.4, () => cafetera(11.0, 0.2, t)], [6.6, 0.4, () => planta(6.4, 0.2)], [0.5, 9.4, () => planta(0.3, 9.2)],
+    [11.4, 9.4, () => planta(11.2, 9.2)], [11.4, 3.0, () => planta(11.3, 2.8)], [5.2, 3.0, () => sillon(5.4, 2.6)],
+  ];
+  for (const id in PUESTOS) {
+    const s = PUESTOS[id];
+    const ag = datos && datos.agentes.find(a => a.id === id);
+    objs.push([s.x + s.y + 0.6, 0, () => puesto(id, ag, t), true]);
+  }
+  objs.sort((a, b) => (a[3] ? a[0] : a[0] + a[1]) - (b[3] ? b[0] : b[0] + b[1]));
+  objs.forEach(o => o[2]());
+  // rótulos de zona en el piso
+  requestAnimationFrame(dibujar);
+}
+function rotulo(txt, [x, y], derecha) {
+  ctx.save(); ctx.translate(x, y); ctx.transform(1, derecha ? 0.5 : -0.5, 0, 1, 0, 0); ctx.fillText(txt, 0, 0); ctx.restore();
+}
+
+// ---------- capa HTML (burbujas y nombres) ----------
+const FMT_HORA = new Intl.DateTimeFormat("es-AR", {timeZone:"America/Argentina/Buenos_Aires", weekday:"short", day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit", hourCycle:"h23"});
+const FMT_RELOJ = new Intl.DateTimeFormat("es-AR", {timeZone:"America/Argentina/Buenos_Aires", hour:"2-digit", minute:"2-digit", hourCycle:"h23"});
+function cuando(iso) { return iso ? FMT_HORA.format(new Date(iso)) : "sin dato"; }
+function relativo(iso) {
+  if (!iso) return "";
+  const m = Math.round((new Date(iso) - Date.now()) / 60000), a = Math.abs(m);
+  const txt = a < 60 ? `${a} min` : a < 2880 ? `${Math.round(a / 60)} h` : `${Math.round(a / 1440)} días`;
+  return m >= 0 ? `en ${txt}` : `hace ${txt}`;
+}
+const ESTADOS = {"corriendo":"Trabajando", "esperando-ok":"Espera tu OK", "ok":"Descansando", "fallo":"Falló", "sin-datos":"Sin corridas"};
+function frase(ag) {
+  if (ag.estado === "corriendo") return "Trabajando…";
+  if (ag.estado === "fallo") return "¡Falló la última!";
+  if (ag.estado === "esperando-ok") { const n = ag.notas.find(x => x.includes("OK")); const m = n && n.match(/^(\d+)/); return m ? `${m[1]} esperan tu OK` : "Espera tu OK"; }
+  if (ag.proxima) return "Vuelve " + relativo(ag.proxima);
+  return ag.id === "antigravity" ? "Espera que lo abras" : "Sin corridas";
+}
+function el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+
+function capa() {
+  const c = document.getElementById("capa"); c.replaceChildren();
+  if (!datos) return;
+  for (const ag of datos.agentes) {
+    const s = PUESTOS[ag.id]; if (!s) continue;
+    const w = s.extra === "grande" ? 2.0 : 1.4;
+    const [bx, by] = p(s.x + w / 2, s.y - 0.25, 50);
+    const b = el("div", "burbuja " + ag.estado, frase(ag));
+    b.style.left = (bx / cv.width * 100) + "%"; b.style.top = (by / cv.height * 100) + "%";
+    b.title = ag.rol; b.onclick = () => marcar(ag.id);
+    const [tx, ty] = p(s.x + w / 2, s.y + 0.8, 0);
+    const tag = el("div", "tag", ag.nombre.toUpperCase());
+    tag.style.left = (tx / cv.width * 100) + "%"; tag.style.top = ((ty + 4) / cv.height * 100) + "%";
+    c.append(b, tag);
+  }
+}
+function marcar(id) {
+  document.querySelectorAll(".card").forEach(x => x.classList.toggle("marcada", x.id === "ag-" + id));
+  const card = document.getElementById("ag-" + id); if (card) card.scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+function tarjetas() {
+  const g = document.getElementById("grilla"); g.replaceChildren();
+  for (const ag of datos.agentes) {
+    const card = el("article", "card"); card.id = "ag-" + ag.id;
+    const h = el("h2", "pix"); h.append(el("span", null, ag.nombre), el("span", "estado " + ag.estado, ESTADOS[ag.estado] || ag.estado));
+    card.append(h, el("div", "rol", `${ag.rol} · ${ag.motor}`));
+    const fila = (k, v, link) => { const f = el("div", "fila"); f.append(el("span", "k", k)); const v2 = el("span", null, v);
+      if (link && /^https:\/\//.test(link)) { v2.append(" · "); const a = el("a", null, "ver corrida"); a.href = link; a.target = "_blank"; a.rel = "noopener"; v2.append(a); }
+      f.append(v2); return f; };
+    const u = ag.ultima;
+    card.append(fila("Última", u ? `${cuando(u.cuando)} (${u.resultado === "success" ? "bien" : u.resultado})` : (ag.estado === "corriendo" ? "en curso" : "sin corridas todavía"), u && u.url));
+    card.append(fila("Próxima", ag.proxima ? `${cuando(ag.proxima)} (${relativo(ag.proxima)})` : (ag.id === "antigravity" ? "cuando la abras en tu PC" : "sin programar")));
+    if (ag.notas.length) { const ul = el("ul"); ag.notas.forEach(n => ul.append(el("li", null, n))); card.append(ul); }
+    g.append(card);
+  }
+}
+function hud() {
+  document.getElementById("trabajando").textContent = `${datos.trabajando}/${datos.agentes.length}`;
+  const pt = datos.pendientes_telegram;
+  const partes = []; if (pt.piezas) partes.push(`${pt.piezas} piezas`); if (pt.lotes) partes.push(`${pt.lotes} lotes`);
+  if (pt.productos) partes.push(`${pt.productos} productos`); if (pt.otros) partes.push(`${pt.otros} otros`);
+  document.getElementById("pendientes").textContent = partes.join(" · ") || "nada";
+  document.getElementById("actualizado").textContent = relativo(datos.actualizado);
+  const viejo = Date.now() - new Date(datos.actualizado) > 90 * 60000;
+  aviso(viejo ? `Ojo: el estado no se actualiza desde ${cuando(datos.actualizado)}. Puede que publicar.yml no esté corriendo.` : "");
+}
+function aviso(txt) { const a = document.getElementById("aviso"); a.textContent = txt; a.classList.toggle("on", !!txt); }
+
+async function cargar() {
+  for (const url of ["estado.json", RAW]) {
+    try {
+      const r = await fetch(url + "?t=" + Date.now(), {cache:"no-store"});
+      if (!r.ok) continue;
+      datos = await r.json(); error = null; capa(); tarjetas(); hud(); return;
+    } catch (e) { error = e; }
+  }
+  aviso("No pude leer el estado de los agentes. No muestro nada inventado: probá recargar en un rato.");
+}
+setInterval(() => { document.getElementById("reloj").textContent = FMT_RELOJ.format(new Date()); if (datos) hud(); }, 1000);
+setInterval(cargar, 120000);
+document.fonts.ready.then(() => requestAnimationFrame(dibujar));
+cargar();
+</script>
+</body>
+</html>
