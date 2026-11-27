@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-27T22:48:46Z",
+ "actualizado": "2026-11-27T22:52:53Z",
  "pendientes_telegram": {
   "piezas": 20,
   "lotes": 3,
@@ -41,8 +41,12 @@
    "nombre": "Formatos",
    "rol": "Arma fotos, carruseles y videos",
    "motor": "Claude",
-   "estado": "corriendo",
-   "ultima": null,
+   "estado": "esperando-ok",
+   "ultima": {
+    "cuando": "2026-11-27T22:52:44Z",
+    "resultado": "success",
+    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/46078501917"
+   },
    "proxima": "2026-12-04T03:00:00Z",
    "notas": [
     "20 foto(s)/video(s) esperando tu OK en Telegram"
@@ -53,12 +57,8 @@
    "nombre": "Editor",
    "rol": "Filtra calidad y te pide el OK del lote",
    "motor": "Claude",
-   "estado": "esperando-ok",
-   "ultima": {
-    "cuando": "2026-11-22T00:26:40Z",
-    "resultado": "success",
-    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/44966203276"
-   },
+   "estado": "corriendo",
+   "ultima": null,
    "proxima": "2026-12-04T03:00:00Z",
    "notas": [
     "3 lote(s) esperando tu OK en Telegram"
