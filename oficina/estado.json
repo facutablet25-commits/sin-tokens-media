@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-27T21:58:56Z",
+ "actualizado": "2026-11-27T22:45:46Z",
  "pendientes_telegram": {
   "piezas": 20,
   "lotes": 3,
@@ -13,12 +13,8 @@
    "nombre": "Research",
    "rol": "Busca noticias, chistes y tendencias de la semana",
    "motor": "Claude",
-   "estado": "fallo",
-   "ultima": {
-    "cuando": "2026-11-27T03:55:43Z",
-    "resultado": "failure",
-    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/45936868852"
-   },
+   "estado": "corriendo",
+   "ultima": null,
    "proxima": "2026-12-04T03:00:00Z",
    "notas": []
   },
@@ -137,7 +133,7 @@
    "ultima": null,
    "proxima": null,
    "notas": [
-    "0001: generar fotos base de mockups con la API de Gemini (pendiente)",
+    "Sin tareas en cola",
     "Corre en la PC de Facu: acá se ve solo cuando abre un PR"
    ]
   },
@@ -146,9 +142,13 @@
    "nombre": "Publicador",
    "rol": "Procesa tus OK de Telegram, publica y avisa ventas",
    "motor": "script",
-   "estado": "corriendo",
-   "ultima": null,
-   "proxima": "2026-11-27T22:05:00Z",
+   "estado": "ok",
+   "ultima": {
+    "cuando": "2026-11-27T21:59:01Z",
+    "resultado": "success",
+    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/46073693487"
+   },
+   "proxima": "2026-11-27T23:05:00Z",
    "notas": [
     "0 posteo(s) aprobados para las próximas 24 h",
     "2 publicado(s) hoy"
