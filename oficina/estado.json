@@ -1,8 +1,8 @@
 {
- "actualizado": "2026-11-27T22:55:18Z",
+ "actualizado": "2026-11-27T22:55:28Z",
  "pendientes_telegram": {
-  "piezas": 36,
-  "lotes": 4,
+  "piezas": 20,
+  "lotes": 3,
   "productos": 5,
   "otros": 0
  },
@@ -49,7 +49,7 @@
    },
    "proxima": "2026-12-04T03:00:00Z",
    "notas": [
-    "36 foto(s)/video(s) esperando tu OK en Telegram"
+    "20 foto(s)/video(s) esperando tu OK en Telegram"
    ]
   },
   {
@@ -65,7 +65,7 @@
    },
    "proxima": "2026-12-04T03:00:00Z",
    "notas": [
-    "4 lote(s) esperando tu OK en Telegram"
+    "3 lote(s) esperando tu OK en Telegram"
    ]
   },
   {
