@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-27T22:47:07Z",
+ "actualizado": "2026-11-27T22:48:46Z",
  "pendientes_telegram": {
   "piezas": 20,
   "lotes": 3,
@@ -27,8 +27,12 @@
    "nombre": "Copy",
    "rol": "Escribe los textos de los posteos",
    "motor": "Claude",
-   "estado": "corriendo",
-   "ultima": null,
+   "estado": "ok",
+   "ultima": {
+    "cuando": "2026-11-27T22:48:36Z",
+    "resultado": "success",
+    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/46078501917"
+   },
    "proxima": "2026-12-04T03:00:00Z",
    "notas": []
   },
@@ -37,12 +41,8 @@
    "nombre": "Formatos",
    "rol": "Arma fotos, carruseles y videos",
    "motor": "Claude",
-   "estado": "esperando-ok",
-   "ultima": {
-    "cuando": "2026-11-22T00:25:23Z",
-    "resultado": "success",
-    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/44966203276"
-   },
+   "estado": "corriendo",
+   "ultima": null,
    "proxima": "2026-12-04T03:00:00Z",
    "notas": [
     "20 foto(s)/video(s) esperando tu OK en Telegram"
