@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-27T13:19:07Z",
+ "actualizado": "2026-11-27T14:59:27Z",
  "pendientes_telegram": {
   "piezas": 20,
   "lotes": 3,
@@ -148,7 +148,7 @@
    "motor": "script",
    "estado": "corriendo",
    "ultima": null,
-   "proxima": "2026-11-27T14:05:00Z",
+   "proxima": "2026-11-27T15:05:00Z",
    "notas": [
     "1 posteo(s) aprobados para las próximas 24 h",
     "1 publicado(s) hoy"
