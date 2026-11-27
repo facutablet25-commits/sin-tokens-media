@@ -1,12 +1,12 @@
 {
- "actualizado": "2026-11-27T22:52:53Z",
+ "actualizado": "2026-11-27T22:55:18Z",
  "pendientes_telegram": {
-  "piezas": 20,
-  "lotes": 3,
+  "piezas": 36,
+  "lotes": 4,
   "productos": 5,
   "otros": 0
  },
- "trabajando": 1,
+ "trabajando": 0,
  "agentes": [
   {
    "id": "research",
@@ -49,7 +49,7 @@
    },
    "proxima": "2026-12-04T03:00:00Z",
    "notas": [
-    "20 foto(s)/video(s) esperando tu OK en Telegram"
+    "36 foto(s)/video(s) esperando tu OK en Telegram"
    ]
   },
   {
@@ -57,11 +57,15 @@
    "nombre": "Editor",
    "rol": "Filtra calidad y te pide el OK del lote",
    "motor": "Claude",
-   "estado": "corriendo",
-   "ultima": null,
+   "estado": "esperando-ok",
+   "ultima": {
+    "cuando": "2026-11-27T22:55:06Z",
+    "resultado": "success",
+    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/46078501917"
+   },
    "proxima": "2026-12-04T03:00:00Z",
    "notas": [
-    "3 lote(s) esperando tu OK en Telegram"
+    "4 lote(s) esperando tu OK en Telegram"
    ]
   },
   {
