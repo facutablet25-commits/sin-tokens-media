@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-27T02:59:11Z",
+ "actualizado": "2026-11-27T03:55:23Z",
  "pendientes_telegram": {
   "piezas": 20,
   "lotes": 3,
@@ -13,13 +13,9 @@
    "nombre": "Research",
    "rol": "Busca noticias, chistes y tendencias de la semana",
    "motor": "Claude",
-   "estado": "ok",
-   "ultima": {
-    "cuando": "2026-11-22T00:23:03Z",
-    "resultado": "success",
-    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/44966203276"
-   },
-   "proxima": "2026-11-27T03:00:00Z",
+   "estado": "corriendo",
+   "ultima": null,
+   "proxima": "2026-12-04T03:00:00Z",
    "notas": []
   },
   {
@@ -33,7 +29,7 @@
     "resultado": "success",
     "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/44966203276"
    },
-   "proxima": "2026-11-27T03:00:00Z",
+   "proxima": "2026-12-04T03:00:00Z",
    "notas": []
   },
   {
@@ -47,7 +43,7 @@
     "resultado": "success",
     "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/44966203276"
    },
-   "proxima": "2026-11-27T03:00:00Z",
+   "proxima": "2026-12-04T03:00:00Z",
    "notas": [
     "20 foto(s)/video(s) esperando tu OK en Telegram"
    ]
@@ -63,7 +59,7 @@
     "resultado": "success",
     "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/44966203276"
    },
-   "proxima": "2026-11-27T03:00:00Z",
+   "proxima": "2026-12-04T03:00:00Z",
    "notas": [
     "3 lote(s) esperando tu OK en Telegram"
    ]
@@ -142,9 +138,13 @@
    "nombre": "Publicador",
    "rol": "Procesa tus OK de Telegram, publica y avisa ventas",
    "motor": "script",
-   "estado": "corriendo",
-   "ultima": null,
-   "proxima": "2026-11-27T03:05:00Z",
+   "estado": "ok",
+   "ultima": {
+    "cuando": "2026-11-27T02:59:15Z",
+    "resultado": "success",
+    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/45931450732"
+   },
+   "proxima": "2026-11-27T04:05:00Z",
    "notas": [
     "0 posteo(s) aprobados para las próximas 24 h",
     "0 publicado(s) hoy"
