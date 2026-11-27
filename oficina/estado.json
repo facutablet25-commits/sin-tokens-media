@@ -1,12 +1,12 @@
 {
- "actualizado": "2026-11-27T03:55:52Z",
+ "actualizado": "2026-11-27T04:06:27Z",
  "pendientes_telegram": {
   "piezas": 20,
   "lotes": 3,
   "productos": 5,
   "otros": 0
  },
- "trabajando": 0,
+ "trabajando": 1,
  "agentes": [
   {
    "id": "research",
@@ -142,13 +142,9 @@
    "nombre": "Publicador",
    "rol": "Procesa tus OK de Telegram, publica y avisa ventas",
    "motor": "script",
-   "estado": "ok",
-   "ultima": {
-    "cuando": "2026-11-27T02:59:15Z",
-    "resultado": "success",
-    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/45931450732"
-   },
-   "proxima": "2026-11-27T04:05:00Z",
+   "estado": "corriendo",
+   "ultima": null,
+   "proxima": "2026-11-27T05:05:00Z",
    "notas": [
     "0 posteo(s) aprobados para las próximas 24 h",
     "0 publicado(s) hoy"
