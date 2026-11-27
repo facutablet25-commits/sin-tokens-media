@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-27T22:45:46Z",
+ "actualizado": "2026-11-27T22:47:07Z",
  "pendientes_telegram": {
   "piezas": 20,
   "lotes": 3,
@@ -13,8 +13,12 @@
    "nombre": "Research",
    "rol": "Busca noticias, chistes y tendencias de la semana",
    "motor": "Claude",
-   "estado": "corriendo",
-   "ultima": null,
+   "estado": "ok",
+   "ultima": {
+    "cuando": "2026-11-27T22:46:58Z",
+    "resultado": "success",
+    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/46078501917"
+   },
    "proxima": "2026-12-04T03:00:00Z",
    "notas": []
   },
@@ -23,12 +27,8 @@
    "nombre": "Copy",
    "rol": "Escribe los textos de los posteos",
    "motor": "Claude",
-   "estado": "ok",
-   "ultima": {
-    "cuando": "2026-11-22T00:23:46Z",
-    "resultado": "success",
-    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/44966203276"
-   },
+   "estado": "corriendo",
+   "ultima": null,
    "proxima": "2026-12-04T03:00:00Z",
    "notas": []
   },
