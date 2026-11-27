@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-27T11:59:49Z",
+ "actualizado": "2026-11-27T12:57:20Z",
  "pendientes_telegram": {
   "piezas": 20,
   "lotes": 3,
@@ -117,12 +117,10 @@
    "nombre": "Gemini",
    "rol": "Escribe el tuit diario de noticia o chiste",
    "motor": "Gemini API",
-   "estado": "sin-datos",
+   "estado": "corriendo",
    "ultima": null,
-   "proxima": "2026-11-27T12:00:00Z",
-   "notas": [
-    "Todavía no escribió ningún tuit: arranca en la próxima corrida diaria"
-   ]
+   "proxima": "2026-11-28T12:00:00Z",
+   "notas": []
   },
   {
    "id": "antigravity",
@@ -142,9 +140,13 @@
    "nombre": "Publicador",
    "rol": "Procesa tus OK de Telegram, publica y avisa ventas",
    "motor": "script",
-   "estado": "corriendo",
-   "ultima": null,
-   "proxima": "2026-11-27T12:05:00Z",
+   "estado": "ok",
+   "ultima": {
+    "cuando": "2026-11-27T11:59:54Z",
+    "resultado": "success",
+    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/45994891307"
+   },
+   "proxima": "2026-11-27T13:05:00Z",
    "notas": [
     "0 posteo(s) aprobados para las próximas 24 h",
     "0 publicado(s) hoy"
