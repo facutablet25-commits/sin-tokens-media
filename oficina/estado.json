@@ -1,12 +1,12 @@
 {
- "actualizado": "2026-11-27T12:57:20Z",
+ "actualizado": "2026-11-27T12:58:34Z",
  "pendientes_telegram": {
   "piezas": 20,
   "lotes": 3,
   "productos": 5,
   "otros": 0
  },
- "trabajando": 1,
+ "trabajando": 0,
  "agentes": [
   {
    "id": "research",
@@ -117,10 +117,16 @@
    "nombre": "Gemini",
    "rol": "Escribe el tuit diario de noticia o chiste",
    "motor": "Gemini API",
-   "estado": "corriendo",
-   "ultima": null,
+   "estado": "ok",
+   "ultima": {
+    "cuando": "2026-11-27T12:57:22Z",
+    "resultado": "success",
+    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/46002875477"
+   },
    "proxima": "2026-11-28T12:00:00Z",
-   "notas": []
+   "notas": [
+    "La última vez lo cubrió Claude (Gemini no estaba o falló)"
+   ]
   },
   {
    "id": "antigravity",
@@ -148,7 +154,7 @@
    },
    "proxima": "2026-11-27T13:05:00Z",
    "notas": [
-    "0 posteo(s) aprobados para las próximas 24 h",
+    "2 posteo(s) aprobados para las próximas 24 h",
     "0 publicado(s) hoy"
    ]
   }
