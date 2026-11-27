@@ -1,20 +1,24 @@
 {
- "actualizado": "2026-11-27T03:55:23Z",
+ "actualizado": "2026-11-27T03:55:52Z",
  "pendientes_telegram": {
   "piezas": 20,
   "lotes": 3,
   "productos": 5,
   "otros": 0
  },
- "trabajando": 1,
+ "trabajando": 0,
  "agentes": [
   {
    "id": "research",
    "nombre": "Research",
    "rol": "Busca noticias, chistes y tendencias de la semana",
    "motor": "Claude",
-   "estado": "corriendo",
-   "ultima": null,
+   "estado": "fallo",
+   "ultima": {
+    "cuando": "2026-11-27T03:55:43Z",
+    "resultado": "failure",
+    "url": "https://github.com/facutablet25-commits/sin-tokens/actions/runs/45936868852"
+   },
    "proxima": "2026-12-04T03:00:00Z",
    "notas": []
   },
