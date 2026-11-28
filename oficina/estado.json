@@ -1,7 +1,7 @@
 {
- "actualizado": "2026-11-28T01:16:30Z",
+ "actualizado": "2026-11-28T02:56:28Z",
  "pendientes_telegram": {
-  "piezas": 36,
+  "piezas": 28,
   "lotes": 4,
   "productos": 5,
   "otros": 0
@@ -49,7 +49,7 @@
    },
    "proxima": "2026-12-04T03:00:00Z",
    "notas": [
-    "36 foto(s)/video(s) esperando tu OK en Telegram"
+    "28 foto(s)/video(s) esperando tu OK en Telegram"
    ]
   },
   {
@@ -67,6 +67,16 @@
    "notas": [
     "4 lote(s) esperando tu OK en Telegram"
    ]
+  },
+  {
+   "id": "evaluador",
+   "nombre": "Evaluador",
+   "rol": "Evalúa cada pieza antes de que te llegue y manda a rehacer lo flojo",
+   "motor": "Claude",
+   "estado": "sin-datos",
+   "ultima": null,
+   "proxima": "2026-11-28T23:00:00Z",
+   "notas": []
   },
   {
    "id": "atencion",
@@ -148,9 +158,9 @@
    "motor": "script",
    "estado": "corriendo",
    "ultima": null,
-   "proxima": "2026-11-28T02:05:00Z",
+   "proxima": "2026-11-28T03:05:00Z",
    "notas": [
-    "0 posteo(s) aprobados para las próximas 24 h",
+    "1 posteo(s) aprobados para las próximas 24 h",
     "2 publicado(s) hoy"
    ]
   }
